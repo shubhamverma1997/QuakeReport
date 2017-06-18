@@ -8,12 +8,14 @@ public class EarthQuake {
     private String mPlace;
     private double mMagnitude;
     private long mDate;
+    private String mUrl;
 
-    public EarthQuake(String str,double mag,long date)
+    public EarthQuake(String str,double mag,long date,String url)
     {
         mPlace=str;
         mMagnitude=mag;
         mDate=date;
+        mUrl=url;
     }
 
     public String getPlace()
@@ -27,5 +29,9 @@ public class EarthQuake {
     public long getDate()
     {
         return mDate;
+    }
+    public String getUrl()
+    {
+        return mUrl;
     }
 }
