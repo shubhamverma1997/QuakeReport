@@ -26,6 +26,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -73,6 +74,8 @@ public class EarthquakeActivity extends AppCompatActivity  implements LoaderCall
 
         ListView earthquakeListView = (ListView) findViewById(R.id.list);
 
+        earthquakeListView.setEmptyView((TextView) findViewById(R.id.empty));
+
         earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -87,6 +90,7 @@ public class EarthquakeActivity extends AppCompatActivity  implements LoaderCall
         });
 
         mAdapter=new EarthQuakeAdapter(this,new ArrayList<EarthQuake>());
+
 
         earthquakeListView.setAdapter(mAdapter);
 
@@ -109,6 +113,8 @@ public class EarthquakeActivity extends AppCompatActivity  implements LoaderCall
         if(data!=null && !data.isEmpty())
         mAdapter.addAll(data);
         Log.v("Main Ac. onLoadFinished","New data set to adapter");
+        TextView emptyview=(TextView) findViewById(R.id.empty);
+        emptyview.setText("No EarthQuakes to Display");
     }
 
     @Override
