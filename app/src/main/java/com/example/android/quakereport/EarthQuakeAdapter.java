@@ -67,7 +67,7 @@ public class EarthQuakeAdapter extends ArrayAdapter<EarthQuake> {
         Date d=new Date(variable.getDate());
         SimpleDateFormat simpleDateFormat =new SimpleDateFormat("MMM dd , yyyy");
         String dateString=simpleDateFormat.format(d);
-;
+
         TextView date=(TextView) listview.findViewById(R.id.date);
         date.setText(dateString);
 

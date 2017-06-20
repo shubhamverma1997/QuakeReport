@@ -17,6 +17,7 @@ package com.example.android.quakereport;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -27,15 +28,40 @@ import java.util.ArrayList;
 
 public class EarthquakeActivity extends AppCompatActivity {
 
+    private EarthQuakeAdapter mAdapter;
+
     public static final String LOG_TAG = EarthquakeActivity.class.getName();
 
+    private String USGS_URL="https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time&minmag=0&limit=100";
+
+    private class EarthquakeAsyncTask extends AsyncTask<String ,Void,ArrayList<EarthQuake>>
+    {
+        @Override
+        protected ArrayList<EarthQuake> doInBackground(String... params) {
+            if(params.length<1 || params[0]==null)
+                return null;
+
+            return QueryUtils.fetchData(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<EarthQuake> earthQuakes) {
+            mAdapter.clear();
+            if(earthQuakes!=null && !earthQuakes.isEmpty())
+            {
+                mAdapter.addAll(earthQuakes);
+            }
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.earthquake_activity);
 
+        new EarthquakeAsyncTask().execute(USGS_URL);
+
         // Create a fake list of earthquake locations.
-        final ArrayList<EarthQuake> earthquakes =QueryUtils.extractEarthquakes();
+        //final ArrayList<EarthQuake> earthquakes =QueryUtils.extractEarthquakes(USGS_URL);
 
         // Find a reference to the {@link ListView} in the layout
         ListView earthquakeListView = (ListView) findViewById(R.id.list);
@@ -45,20 +71,17 @@ public class EarthquakeActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 Intent intent=new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(earthquakes.get(position).getUrl()));
+                intent.setData(Uri.parse(mAdapter.getItem(position).getUrl()));
                 if(intent.resolveActivity(getPackageManager())!=null)
                 {
                     startActivity(intent);
                 }
             }
         });
-        // Create a new {@link ArrayAdapter} of earthquakes
-        EarthQuakeAdapter adapter=new EarthQuakeAdapter(this,earthquakes);
 
+        mAdapter=new EarthQuakeAdapter(this,new ArrayList<EarthQuake>());
 
-        // Set the adapter on the {@link ListView}
-        // so the list can be populated in the user interface
-        earthquakeListView.setAdapter(adapter);
+        earthquakeListView.setAdapter(mAdapter);
     }
 
 
