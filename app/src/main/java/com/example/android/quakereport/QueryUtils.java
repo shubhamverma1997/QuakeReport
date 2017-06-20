@@ -38,6 +38,7 @@ public final class QueryUtils {
 
     public static ArrayList<EarthQuake> fetchData(String urlString)
     {
+        Log.v("QueryUtils","fetchdata to be started ");
         URL url=createURL(urlString);
         String JSONResponse=null;
         try{
