@@ -17,8 +17,11 @@ package com.example.android.quakereport;
 
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -26,6 +29,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -94,10 +98,23 @@ public class EarthquakeActivity extends AppCompatActivity  implements LoaderCall
 
         earthquakeListView.setAdapter(mAdapter);
 
-        LoaderManager loaderManager=getLoaderManager();
-        Log.v("Main Activity","LoaderManager");
-        loaderManager.initLoader(earthquakeLoaderId,null,this);
-        Log.v("Main Activity","initLoader executed");
+        ConnectivityManager cm=(ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo=cm.getActiveNetworkInfo();
+        boolean isConnected=networkInfo!=null && networkInfo.isConnectedOrConnecting();
+
+        if(!isConnected)
+        {
+            ProgressBar spinner=(ProgressBar) findViewById(R.id.loadingspinner);
+            spinner.setVisibility(View.GONE);
+            TextView emptyview=(TextView) findViewById(R.id.empty);
+            emptyview.setText("No Internet Connection.");
+        }
+        else {
+            LoaderManager loaderManager = getLoaderManager();
+            Log.v("Main Activity", "LoaderManager");
+            loaderManager.initLoader(earthquakeLoaderId, null, this);
+            Log.v("Main Activity", "initLoader executed");
+        }
     }
 
     @Override
@@ -108,6 +125,9 @@ public class EarthquakeActivity extends AppCompatActivity  implements LoaderCall
 
     @Override
     public void onLoadFinished(Loader<ArrayList<EarthQuake>> loader, ArrayList<EarthQuake> data) {
+
+        ProgressBar spinner=(ProgressBar) findViewById(R.id.loadingspinner);
+        spinner.setVisibility(View.GONE);
        mAdapter.clear();
 
         if(data!=null && !data.isEmpty())

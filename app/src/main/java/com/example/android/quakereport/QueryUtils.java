@@ -38,11 +38,18 @@ public final class QueryUtils {
 
     public static ArrayList<EarthQuake> fetchData(String urlString)
     {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         Log.v("QueryUtils","fetchdata to be started ");
         URL url=createURL(urlString);
         String JSONResponse=null;
         try{
             JSONResponse=makeRequestOverInternet(url);
+            Log.v("QueryUtils","fetchdata completed ");
         } catch (IOException e)
         {
             Log.e("QueryUtils","Error closing Input Stream");
